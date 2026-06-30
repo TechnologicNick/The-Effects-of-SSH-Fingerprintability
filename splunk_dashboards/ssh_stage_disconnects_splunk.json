@@ -1,0 +1,134 @@
+{
+  "visualizations": {
+    "viz_NRmnfTRq": {
+      "type": "splunk.column",
+      "options": {
+        "yAxisAbbreviation": "off",
+        "y2AxisAbbreviation": "off",
+        "showRoundedY2AxisLabels": false,
+        "legendTruncation": "ellipsisMiddle",
+        "showY2MajorGridLines": true,
+        "yAxisScale": "log",
+        "dataValuesDisplay": "all"
+      },
+      "dataSources": {
+        "primary": "ds_c8bbySuw"
+      },
+      "title": "Total sessions and disconnects after banner",
+      "showProgressBar": true
+    },
+    "viz_8zAHylBx": {
+      "type": "splunk.column",
+      "options": {
+        "yAxisAbbreviation": "off",
+        "y2AxisAbbreviation": "off",
+        "showRoundedY2AxisLabels": false,
+        "legendTruncation": "ellipsisMiddle",
+        "showY2MajorGridLines": true,
+        "xAxisLabelRotation": 0,
+        "yAxisScale": "log",
+        "dataValuesDisplay": "all",
+        "stackMode": "auto",
+        "showSplitSeries": false
+      },
+      "dataSources": {
+        "primary": "ds_eSmtLfn7"
+      },
+      "title": "Total sessions and disconnects after key exchange",
+      "showProgressBar": true
+    }
+  },
+  "dataSources": {
+    "ds_c8bbySuw": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\"\n| eval level=case(\n    eventid=\"cowrie.client.version\",1,\n    eventid=\"cowrie.client.kex\",2,\n    match(eventid,\"^cowrie\\.login\\.\"),3,\n    true(),0\n)\n| stats\n    max(level) as max_stage\n    first(sensor) as sensor\n    by session\n| eval banner=if(max_stage=1,1,0)\n| stats\n    count as total_sessions\n    sum(banner) as banner_sessions\n    by sensor\n| table sensor total_sessions banner_sessions",
+        "queryParameters": {
+          "earliest": "-24h@h",
+          "latest": "now"
+        }
+      },
+      "name": "Total sessions and disconnects after banner search"
+    },
+    "ds_eSmtLfn7": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\"\n| eval level=case(\n    eventid=\"cowrie.client.version\",1,\n    eventid=\"cowrie.client.kex\",2,\n    match(eventid,\"^cowrie\\.login\\.\"),3,\n    true(),0\n)\n| stats\n    max(level) as max_stage\n    first(sensor) as sensor\n    by session\n| eval kex=if(max_stage=2,1,0)\n| stats\n    count as total_sessions\n    sum(kex) as kex_sessions\n    by sensor\n| table sensor total_sessions kex_sessions",
+        "queryParameters": {
+          "earliest": "-24h@h",
+          "latest": "now"
+        }
+      },
+      "name": "Total sessions and disconnects after key exchange search"
+    }
+  },
+  "defaults": {
+    "dataSources": {
+      "ds.search": {
+        "options": {
+          "queryParameters": {}
+        }
+      },
+      "ds.spl2": {
+        "options": {
+          "queryParameters": {}
+        }
+      }
+    },
+    "visualizations": {
+      "global": {
+        "showProgressBar": true
+      }
+    }
+  },
+  "inputs": {},
+  "layout": {
+    "options": {},
+    "globalInputs": [],
+    "tabs": {
+      "items": [
+        {
+          "layoutId": "layout_1",
+          "label": "New tab"
+        }
+      ]
+    },
+    "layoutDefinitions": {
+      "layout_1": {
+        "type": "grid",
+        "structure": [
+          {
+            "item": "viz_NRmnfTRq",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 0,
+              "w": 1440,
+              "h": 250
+            }
+          },
+          {
+            "item": "viz_8zAHylBx",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 250,
+              "w": 1440,
+              "h": 250
+            }
+          }
+        ],
+        "options": {
+          "width": 1440,
+          "height": 500
+        }
+      }
+    }
+  },
+  "description": "",
+  "title": "SSH stage disconnects",
+  "applicationProperties": {
+    "hideEdit": false,
+    "hideExport": false
+  }
+}

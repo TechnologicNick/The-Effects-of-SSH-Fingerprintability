@@ -39,3 +39,23 @@ mkdir -p outputs/<honeypot_name>/state/tty
 ```
 
 If these directories are not created, or if they are not writable by the Docker container, the honeypot will still log connection and login events. However, the moment a shell is created or a command is executed, the honeypot will silently fail without any errors being appended to the log files.
+
+## Splunk
+
+You can log in to the Splunk web interface at `http://localhost:8000` using the default credentials:
+
+* Username: `admin`
+* Password: `sshhoneypot`
+
+### Dashboards
+
+The 5 provided Splunk dashboards are located in the `splunk_dashboards` folder. You can import them into your Splunk instance to visualize the data collected by the honeypots.
+
+* `Cowrie Honeypot`: Main dashboard containing general statistics and information about the honeypots, statistics per sensor (honeypot) and SSH public keys used by attackers.
+* `SSH stage disconnects`: Displays at which stage of the SSH connection attackers disconnect per honeypot.
+
+Additional dashboards:
+
+* `Sensor Overview`: Displays the number of events per sensor (honeypot).
+* `Last command before disconnect`: Displays the last command executed by attackers before they disconnect from the honeypot.
+* `Failed commands`: List of commands that attackers attempted to execute but failed, along with the number of times each command was attempted.

@@ -1,0 +1,107 @@
+{
+  "dataSources": {
+    "ds_zjigDOUy": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" eventid=\"cowrie.command.failed\"\r\n| stats count by input\r\n| sort - count\r\n| head 20",
+        "queryParameters": {
+          "earliest": "-30d@d",
+          "latest": "now",
+          "sampleRatio": 1
+        }
+      },
+      "name": "Table search"
+    }
+  },
+  "visualizations": {
+    "viz_zfVBiNQt": {
+      "type": "splunk.table",
+      "options": {
+        "count": 20,
+        "dataOverlayMode": "none",
+        "drilldown": "none",
+        "showRowNumbers": false,
+        "showInternalFields": false
+      },
+      "dataSources": {
+        "primary": "ds_zjigDOUy"
+      }
+    }
+  },
+  "applicationProperties": {
+    "hideEdit": false,
+    "hideExport": false
+  },
+  "inputs": {
+    "input_global_trp": {
+      "type": "input.timerange",
+      "options": {
+        "token": "global_time",
+        "defaultValue": "-24h@h,now"
+      },
+      "title": "Global Time Range"
+    }
+  },
+  "layout": {
+    "options": {},
+    "globalInputs": [
+      "input_global_trp"
+    ],
+    "tabs": {
+      "items": [
+        {
+          "layoutId": "layout_1",
+          "label": "New tab"
+        }
+      ]
+    },
+    "layoutDefinitions": {
+      "layout_1": {
+        "type": "grid",
+        "structure": [
+          {
+            "item": "viz_zfVBiNQt",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 0,
+              "w": 1440,
+              "h": 250
+            }
+          }
+        ],
+        "options": {
+          "width": 1440,
+          "height": 960
+        }
+      }
+    }
+  },
+  "title": "Failed commands",
+  "description": "A list of all the commands that have failed",
+  "defaults": {
+    "dataSources": {
+      "ds.search": {
+        "options": {
+          "queryParameters": {
+            "latest": "$global_time.latest$",
+            "earliest": "$global_time.earliest$"
+          }
+        }
+      },
+      "ds.spl2": {
+        "options": {
+          "queryParameters": {
+            "latest": "$global_time.latest$",
+            "earliest": "$global_time.earliest$"
+          }
+        }
+      }
+    },
+    "visualizations": {
+      "global": {
+        "showProgressBar": true
+      }
+    }
+  }
+}

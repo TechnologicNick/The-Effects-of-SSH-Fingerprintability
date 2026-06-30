@@ -1,0 +1,1110 @@
+{
+  "dataSources": {
+    "ds_vSsjeRvP": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" eventid=\"cowrie.session.connect\" | timechart span=4h count BY dst_ip limit=0",
+        "queryParameters": {
+          "earliest": "$global_time.earliest$",
+          "latest": "$global_time.latest$"
+        }
+      },
+      "name": "Dest IP usage search"
+    },
+    "ds_I9HdNZbY": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" eventid=\"cowrie.session.connect\"\n| stats count AS cps BY _time session dst_ip\n| timechart span=1h sum(cps) BY dst_ip",
+        "queryParameters": {
+          "sampleRatio": 1
+        }
+      },
+      "name": "Connections per destination search"
+    },
+    "ds_wC3kYqjK": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" eventid=\"cowrie.session.connect\"\n| stats count as connection_count by src_ip\n| ipinfolite src_ip\n| stats sum(connection_count) as connection_sum count(src_ip) as ip_count by asn as_name\n| sort -ip_count",
+        "queryParameters": {
+          "sampleRatio": 1
+        }
+      },
+      "name": "Top ASN_s search"
+    },
+    "ds_bXP2HV0G": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\"\n| stats count AS cps BY _time session sensor\n| timechart span=1h sum(cps) BY sensor",
+        "queryParameters": {
+          "sampleRatio": 1
+        }
+      },
+      "name": "Sensor events search"
+    },
+    "ds_wih9JCQ2": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" eventid=\"cowrie.command.input\"\n| stats count AS cps BY _time sensor session\n| timechart span=1h avg(cps) BY sensor",
+        "queryParameters": {
+          "sampleRatio": 1
+        }
+      },
+      "name": "Commands per session over time search"
+    },
+    "ds_Sz9YxAzN": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" eventid=\"cowrie.command.input\" | top limit=50 input",
+        "queryParameters": {
+          "sampleRatio": 1
+        }
+      },
+      "name": "Top commands executed search"
+    },
+    "ds_WRscJ7bc": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" \n| spath eventid \n| search eventid=\"cowrie.login.success\"\n| top limit=10 password\n| fields - percent",
+        "queryParameters": {
+          "sampleRatio": 1
+        }
+      },
+      "name": "Top Passwords search"
+    },
+    "ds_0w5O7Lrx": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" \n| spath eventid \n| search eventid=\"cowrie.login.success\"\n| top limit=10 username\n| fields - percent",
+        "queryParameters": {
+          "sampleRatio": 1
+        }
+      },
+      "name": "Top Usernames search"
+    },
+    "ds_9UD8v0YC": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" \n| spath eventid \n| search eventid=\"cowrie.login.success\" \n| eval credentials = username + \" / \" + password \n| top limit=15 credentials\n| fields - percent",
+        "queryParameters": {
+          "sampleRatio": 1
+        }
+      },
+      "name": "Bar chart search"
+    },
+    "ds_6loAQPDp": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" | spath eventid | search eventid=\"cowrie.session.connect\" | spath src_ip | iplocation src_ip | geostats latfield=lat, longfield=lon count",
+        "queryParameters": {
+          "sampleRatio": 1
+        }
+      },
+      "name": "Attacker by destination search"
+    },
+    "ds_l3MRIwqh": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" | spath eventid | search eventid=\"cowrie.session.connect\" | stats count(dst_ip) as count by dst_ip",
+        "queryParameters": {
+          "sampleRatio": 1
+        }
+      },
+      "name": "Destinations search"
+    },
+    "ds_OUyhxNYZ": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" | spath eventid | search eventid=\"cowrie.session.connect\" | spath src_ip | iplocation src_ip | stats count by Country| geom geo_countries allFeatures=True featureIdField=Country"
+      },
+      "name": "Search_1"
+    },
+    "ds_pXyBPylP": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\"| top limit=1000 version"
+      },
+      "name": "Top SSH Client Versions"
+    },
+    "ds_fdkkx09i": {
+      "type": "ds.search",
+      "options": {
+        "enableSmartSources": true,
+        "query": "index=\"cowrie\" | stats dc(src_ip) as \"Unique Attacking IPs\""
+      },
+      "name": "total_unqiue_attackers_search"
+    },
+    "ds_nXfqfWNk": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" eventid=\"cowrie.client.kex\"\n| stats count dc(src_ip) as \"Unique IPs Used\" by hassh\n| sort - \"Unique IPs Used\" \n|  head 35",
+        "enableSmartSources": true
+      },
+      "name": "Unique IPs per HASSH"
+    },
+    "ds_ni110Qyk": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\"\n[ search index=\"cowrie\" \n  | top limit=9 version \n  | fields version ]\n| chart count over version by sensor"
+      },
+      "name": "SSH types per sensor"
+    },
+    "ds_9Kpox1GR": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\"\n| chart count over sensor by version limit=9 useother=t otherstr=\"Other\"\n| addtotals fieldname=TotalRows\n| foreach * [eval <<FIELD>> = if(\"<<FIELD>>\"==\"sensor\" OR \"<<FIELD>>\"==\"TotalRows\", <<FIELD>>, round(('<<FIELD>>' / TotalRows) * 100, 2) . \"%\")]\n| fields - TotalRows"
+      },
+      "name": "Types of connections per sensor"
+    },
+    "ds_UToaPpiI": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" eventid=\"cowrie.login.success\" OR eventid=\"cowrie.command.input\"\n| stats count(eval(eventid=\"cowrie.command.input\")) as cmd_count by sensor, session\n| eval source = sensor\n| eval bucket = case(cmd_count == 0, \"Bounced\", cmd_count == 1, \"1 cmd\", cmd_count == 2, \"2 cmds\", cmd_count == 3, \"3 cmds\", true(), \"Deeply Engaged (4+ cmds)\")\n| eval target = sensor . \" -> \" . bucket\n| stats count as value by source, target"
+      },
+      "name": "Connection drop off after commands"
+    },
+    "ds_nlajiWUB": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" eventid=\"cowrie.login.success\" OR eventid=\"cowrie.command.input\"\n| stats count(eval(eventid=\"cowrie.command.input\")) as cmd_count by sensor, session\n| eval Behavior = case(cmd_count == 0, \"Bounced\", cmd_count == 1, \"1 cmd\", cmd_count == 2, \"2 cmds\", cmd_count == 3, \"3 cmds\", true(), \"Deeply Engaged (4+ cmds)\")\n| chart count over sensor by Behavior\n| fields sensor, Bounced, \"1 cmd\", \"2 cmds\", \"3 cmds\", \"Deeply Engaged (4+ cmds)\""
+      },
+      "name": "Number of commands before drop"
+    },
+    "ds_tmN4dWwE": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" eventid=\"cowrie.login.success\" OR eventid=\"cowrie.command.input\" OR eventid=\"cowrie.client.kex\"\n| stats count(eval(eventid=\"cowrie.command.input\")) as cmd_count, max(hassh) as hassh by sensor, session\n| search hassh=*\n| eval Behavior = case(cmd_count == 0, \"Bounced\", cmd_count == 1, \"1 cmd\", cmd_count == 2, \"2 cmds\", cmd_count == 3, \"3 cmds\", true(), \"Deeply Engaged (4+ cmds)\")\n| chart dc(hassh) over sensor by Behavior\n| fields sensor, Bounced, \"1 cmd\", \"2 cmds\", \"3 cmds\", \"Deeply Engaged (4+ cmds)\""
+      },
+      "name": "Unique hassh drop off after commands"
+    },
+    "ds_mwBa0vhm": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" eventid=\"cowrie.command.input\"\n| sort 0 _time\n| stats list(input) as command_chain, count as total_cmds by sensor, session\n| where total_cmds > 1\n| eval command_chain = mvjoin(command_chain, \"  -->  \")\n| top limit=15 command_chain by sensor"
+      },
+      "name": "command chains"
+    },
+    "ds_TUEW1Qyz": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=cowrie eventid=\"cowrie.command.input\"\n| regex input=\"authorized_keys\"\n| rex field=input \"(?<ssh_key>ssh-\\w+\\s+[A-Za-z0-9+/=]+)\"\n| stats count as deploy_count dc(src_ip) as deploy_ip_count values(src_ip) as deploy_ips by ssh_key\n| join type=inner ssh_key [\n    search index=cowrie eventid=\"cowrie.client.fingerprint\"\n    | rename key as ssh_key\n    | stats count as auth_count dc(src_ip) as auth_ip_count values(src_ip) as auth_ips values(fingerprint) as fingerprint by ssh_key\n]\n| eval deploys_per_ip=round(deploy_count/deploy_ip_count,2)\n| eval auths_per_ip=round(auth_count/auth_ip_count,2)\n| eval first_five_deploy_ips=mvindex(deploy_ips, 0, 4)\n| table fingerprint deploy_count deploy_ip_count first_five_deploy_ips deploys_per_ip auth_count auth_ips auths_per_ip ssh_key\n| sort -deploy_count",
+        "queryParameters": {
+          "earliest": "0",
+          "latest": ""
+        }
+      },
+      "name": "Search_2"
+    },
+    "ds_TuE74ssp": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" eventid=\"cowrie.command.input\"\n| regex input=\"authorized_keys\"\n| rex field=input \"(?<ssh_key>ssh-\\w+\\s+[A-Za-z0-9+/=]+)\"\n| stats count as deploy_count by ssh_key\n| join type=left ssh_key [\n    search index=\"cowrie\" eventid=\"cowrie.client.fingerprint\"\n    | rename key as ssh_key\n    | stats first(fingerprint) as fingerprint by ssh_key\n]\n| table fingerprint deploy_count ssh_key\n| sort -deploy_count",
+        "queryParameters": {
+          "earliest": "0",
+          "latest": ""
+        }
+      },
+      "name": "Search_3"
+    },
+    "ds_g8KKdByh": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" eventid=\"cowrie.client.fingerprint\"\n| rename key as ssh_key\n| stats count as auth_count\n        values(username) as usernames\n        first(fingerprint) as fingerprint\n        by ssh_key\n| table fingerprint auth_count usernames ssh_key\n| sort -auth_count",
+        "queryParameters": {
+          "earliest": "0",
+          "latest": ""
+        }
+      },
+      "name": "Search_4"
+    },
+    "ds_eHKxkJGW": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\"\n| eval level=case(\n    eventid=\"cowrie.client.version\",1,\n    eventid=\"cowrie.client.kex\",2,\n    match(eventid,\"^cowrie\\.login\\.\"),3,\n    true(),0\n)\n| stats\n    max(level) as max_stage\n    first(sensor) as sensor\n    by session\n| eval banner=if(max_stage=1,1,0)\n| stats\n    count as total_sessions\n    sum(banner) as banner_sessions\n    by sensor\n| eval banner_pct=round((banner_sessions/total_sessions)*100,2)\n| table sensor total_sessions banner_sessions banner_pct"
+      },
+      "name": "Banner disconnects"
+    },
+    "ds_pOWllc2t": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\"\n| eval level=case(\n    eventid=\"cowrie.client.version\",1,\n    eventid=\"cowrie.client.kex\",2,\n    match(eventid,\"^cowrie\\.login\\.\"),3,\n    true(),0\n)\n| stats\n    max(level) as max_stage\n    first(sensor) as sensor\n    by session\n| eval kex_only=if(max_stage=2,1,0)\n| stats\n    count as total_sessions\n    sum(kex_only) as kex_sessions\n    by sensor\n| eval kex_pct=round((kex_sessions/total_sessions)*100,2)\n| table sensor total_sessions kex_sessions kex_pct"
+      },
+      "name": "KEX disconnects"
+    },
+    "ds_8VTJFBNq": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" (eventid=\"cowrie.command.input\" OR eventid=\"cowrie.session.closed\")\n| eval config_group = case(\n    match(sensor, \"combined\"), \"Combined (Banner + Uname)\",\n    match(sensor, \"baseline\"), \"Baseline (Standard Cowrie)\"\n  )\n| stats \n    count as total_commands,\n    values(input) as all_commands,\n    dc(input) as distinct_session_cmds,\n    min(_time) as session_start,\n    max(_time) as session_end\n    by config_group, session\n| eval session_duration = session_end - session_start\n| eval contains_uname = if(match(all_commands, \"uname\"), 1, 0)\n| eval panic_exit = if(match(all_commands, \"(exit|logout|history\\s+-c|kill\\s+-9)\"), 1, 0)\n| where total_commands > 2 AND contains_uname=1\n| stats \n    count as qualification_sessions,\n    avg(distinct_session_cmds) as avg_unique_cmds,\n    max(distinct_session_cmds) as max_unique_cmds,\n    avg(session_duration) as avg_duration_seconds,\n    max(session_duration) as max_duration_seconds,\n    median(session_duration) as median_duration_seconds,\n    perc90(session_duration) as p90_duration_seconds,\n    perc95(session_duration) as p95_duration_seconds,\n    sum(panic_exit) as total_panic_exits\n    by config_group\n| eval panic_rate = round((total_panic_exits / qualification_sessions) * 100, 2) . \"%\"\n| eval avg_duration_seconds = round(avg_duration_seconds, 2)\n| eval avg_unique_cmds = round(avg_unique_cmds, 2)\n| table config_group, qualification_sessions, avg_unique_cmds, max_unique_cmds, avg_duration_seconds, median_duration_seconds, p90_duration_seconds, p95_duration_seconds, max_duration_seconds, panic_rate"
+      },
+      "name": "combined_iteration_time_data"
+    },
+    "ds_87uM98I1": {
+      "type": "ds.search",
+      "options": {
+        "query": "index=\"cowrie\" (eventid=\"cowrie.session.connect\" OR eventid=\"cowrie.command.input\" OR eventid=\"cowrie.session.closed\")\n| eval config_group = case(\n    match(sensor, \"combined\"), \"Combined\",\n    match(sensor, \"baseline\"), \"Baseline\"\n  )\n| eval local_ip = coalesce(dst_ip, dest_ip)\n| stats \n    count(eval(eventid=\"cowrie.command.input\")) as total_commands,\n    values(input) as all_commands,\n    dc(input) as distinct_session_cmds,\n    min(_time) as session_start,\n    max(_time) as session_end,\n    values(src_ip) as attacker_ip,\n    values(local_ip) as honeypot_ip\n    by config_group, session\n| eval session_duration = session_end - session_start\n| eval contains_uname = if(match(all_commands, \"uname\"), 1, 0)\n| eval panic_exit = if(match(all_commands, \"(exit|logout|history\\s+-c|kill\\s+-9)\"), 1, 0)\n| where total_commands > 2 AND contains_uname=1\n| stats \n    count as qualification_sessions,\n    dc(attacker_ip) as unique_attacker_ips,\n    avg(distinct_session_cmds) as avg_unique_cmds,\n    max(distinct_session_cmds) as max_unique_cmds,\n    avg(session_duration) as avg_duration_seconds,\n    max(session_duration) as max_duration_seconds,\n    median(session_duration) as median_duration_seconds,\n    perc90(session_duration) as p90_duration_seconds,\n    perc95(session_duration) as p95_duration_seconds,\n    sum(panic_exit) as total_panic_exits\n    by config_group, honeypot_ip\n| eval panic_rate = round((total_panic_exits / qualification_sessions) * 100, 2) . \"%\"\n| eval avg_duration_seconds = round(avg_duration_seconds, 2)\n| eval avg_unique_cmds = round(avg_unique_cmds, 2)\n| sort config_group, -qualification_sessions\n| table config_group, honeypot_ip, qualification_sessions, unique_attacker_ips, avg_unique_cmds, max_unique_cmds, avg_duration_seconds, median_duration_seconds, p90_duration_seconds, p95_duration_seconds, max_duration_seconds, panic_rate"
+      },
+      "name": "per ip combined config"
+    }
+  },
+  "visualizations": {
+    "viz_aD41nCHH": {
+      "type": "splunk.area",
+      "options": {
+        "yAxisAbbreviation": "auto",
+        "y2AxisAbbreviation": "auto",
+        "showRoundedY2AxisLabels": false,
+        "legendTruncation": "ellipsisMiddle",
+        "showY2MajorGridLines": true,
+        "xAxisLabelRotation": 0,
+        "xAxisTitleVisibility": "show",
+        "yAxisTitleVisibility": "show",
+        "y2AxisTitleVisibility": "show",
+        "yAxisScale": "linear",
+        "showOverlayY2Axis": false,
+        "y2AxisScale": "linear",
+        "nullValueDisplay": "zero",
+        "dataValuesDisplay": "off",
+        "stackMode": "stacked100",
+        "showSplitSeries": false,
+        "showIndependentYRanges": false,
+        "legendMode": "standard",
+        "legendDisplay": "right"
+      },
+      "dataSources": {
+        "primary": "ds_vSsjeRvP"
+      },
+      "title": "Dest IP usage"
+    },
+    "viz_iTTcFZ7N": {
+      "type": "splunk.line",
+      "options": {
+        "yAxisAbbreviation": "auto",
+        "y2AxisAbbreviation": "auto",
+        "showRoundedY2AxisLabels": false,
+        "legendTruncation": "ellipsisMiddle",
+        "showY2MajorGridLines": true,
+        "xAxisLabelRotation": 0,
+        "xAxisTitleVisibility": "show",
+        "yAxisTitleVisibility": "show",
+        "y2AxisTitleVisibility": "show",
+        "yAxisScale": "linear",
+        "showOverlayY2Axis": false,
+        "y2AxisScale": "linear",
+        "nullValueDisplay": "gaps",
+        "dataValuesDisplay": "off",
+        "showSplitSeries": false,
+        "showIndependentYRanges": false,
+        "legendMode": "standard",
+        "legendDisplay": "right",
+        "lineWidth": 2
+      },
+      "dataSources": {
+        "primary": "ds_I9HdNZbY"
+      },
+      "title": "Connections per destination"
+    },
+    "viz_LpaZKOiP": {
+      "type": "splunk.table",
+      "options": {
+        "count": 20,
+        "dataOverlayMode": "none",
+        "drilldown": "none",
+        "showRowNumbers": false,
+        "showInternalFields": false
+      },
+      "dataSources": {
+        "primary": "ds_wC3kYqjK"
+      },
+      "title": "Top ASN's"
+    },
+    "viz_t73mlvMV": {
+      "type": "splunk.line",
+      "options": {
+        "yAxisAbbreviation": "auto",
+        "y2AxisAbbreviation": "auto",
+        "showRoundedY2AxisLabels": false,
+        "legendTruncation": "ellipsisMiddle",
+        "showY2MajorGridLines": true,
+        "xAxisLabelRotation": 0,
+        "xAxisTitleVisibility": "show",
+        "yAxisTitleVisibility": "show",
+        "y2AxisTitleVisibility": "show",
+        "yAxisScale": "linear",
+        "showOverlayY2Axis": false,
+        "y2AxisScale": "linear",
+        "nullValueDisplay": "zero",
+        "showIndependentYRanges": false,
+        "legendMode": "standard",
+        "legendDisplay": "right",
+        "lineWidth": 2,
+        "dataValuesDisplay": "minmax",
+        "overlayFields": []
+      },
+      "dataSources": {
+        "primary": "ds_bXP2HV0G"
+      },
+      "title": "Sensor events"
+    },
+    "viz_lRaHkiLe": {
+      "type": "splunk.line",
+      "options": {
+        "yAxisAbbreviation": "auto",
+        "y2AxisAbbreviation": "auto",
+        "showRoundedY2AxisLabels": false,
+        "legendTruncation": "ellipsisMiddle",
+        "showY2MajorGridLines": true,
+        "xAxisLabelRotation": 0,
+        "xAxisTitleVisibility": "show",
+        "yAxisTitleVisibility": "show",
+        "y2AxisTitleVisibility": "show",
+        "yAxisScale": "linear",
+        "showOverlayY2Axis": false,
+        "y2AxisScale": "linear",
+        "nullValueDisplay": "zero",
+        "dataValuesDisplay": "off",
+        "showSplitSeries": false,
+        "showIndependentYRanges": false,
+        "legendMode": "standard",
+        "legendDisplay": "right",
+        "lineWidth": 2
+      },
+      "dataSources": {
+        "primary": "ds_wih9JCQ2"
+      },
+      "title": "Commands per session over time"
+    },
+    "viz_n8FRLQim": {
+      "type": "splunk.table",
+      "options": {
+        "count": 20,
+        "dataOverlayMode": "none",
+        "drilldown": "none",
+        "showRowNumbers": false,
+        "showInternalFields": false
+      },
+      "dataSources": {
+        "primary": "ds_Sz9YxAzN"
+      },
+      "title": "Top commands executed"
+    },
+    "viz_mE8V6cT8": {
+      "type": "splunk.column",
+      "options": {
+        "yAxisAbbreviation": "auto",
+        "y2AxisAbbreviation": "auto",
+        "showRoundedY2AxisLabels": false,
+        "legendTruncation": "ellipsisMiddle",
+        "showY2MajorGridLines": true,
+        "xAxisLabelRotation": 0,
+        "xAxisTitleVisibility": "show",
+        "yAxisTitleVisibility": "show",
+        "y2AxisTitleVisibility": "show",
+        "yAxisScale": "linear",
+        "showOverlayY2Axis": false,
+        "y2AxisScale": "linear",
+        "dataValuesDisplay": "off",
+        "stackMode": "auto",
+        "showSplitSeries": false,
+        "showIndependentYRanges": false,
+        "legendDisplay": "off"
+      },
+      "dataSources": {
+        "primary": "ds_WRscJ7bc"
+      },
+      "title": "Top Passwords"
+    },
+    "viz_bSlRfkQJ": {
+      "type": "splunk.column",
+      "options": {
+        "yAxisAbbreviation": "auto",
+        "y2AxisAbbreviation": "auto",
+        "showRoundedY2AxisLabels": false,
+        "legendTruncation": "ellipsisMiddle",
+        "showY2MajorGridLines": true,
+        "xAxisLabelRotation": 0,
+        "xAxisTitleVisibility": "show",
+        "yAxisTitleVisibility": "show",
+        "y2AxisTitleVisibility": "show",
+        "yAxisScale": "linear",
+        "showOverlayY2Axis": false,
+        "y2AxisScale": "linear",
+        "dataValuesDisplay": "off",
+        "stackMode": "auto",
+        "showSplitSeries": false,
+        "showIndependentYRanges": false,
+        "legendDisplay": "off"
+      },
+      "dataSources": {
+        "primary": "ds_0w5O7Lrx"
+      },
+      "title": "Top Usernames"
+    },
+    "viz_AqPIIwOP": {
+      "type": "splunk.bar",
+      "options": {
+        "yAxisAbbreviation": "auto",
+        "y2AxisAbbreviation": "auto",
+        "showRoundedY2AxisLabels": false,
+        "legendTruncation": "ellipsisMiddle",
+        "showY2MajorGridLines": true,
+        "xAxisTitleText": "Username / Password combinations",
+        "xAxisTitleVisibility": "show",
+        "yAxisTitleText": "Sessions per combination",
+        "yAxisTitleVisibility": "show",
+        "y2AxisTitleVisibility": "show",
+        "yAxisScale": "log",
+        "dataValuesDisplay": "all",
+        "stackMode": "auto",
+        "showSplitSeries": false,
+        "showIndependentYRanges": false,
+        "legendDisplay": "off"
+      },
+      "dataSources": {
+        "primary": "ds_9UD8v0YC"
+      }
+    },
+    "viz_fyJq4xL9": {
+      "type": "splunk.map",
+      "options": {
+        "center": [
+          42.6863566542182,
+          14.638432837442451
+        ],
+        "zoom": 2.6516410870363947,
+        "showBaseLayer": true,
+        "layers": [
+          {
+            "type": "bubble",
+            "latitude": "> primary | seriesByName('latitude')",
+            "longitude": "> primary | seriesByName('longitude')",
+            "bubbleSize": "> primary | frameWithoutSeriesNames('_geo_bounds_east', '_geo_bounds_west', '_geo_bounds_north', '_geo_bounds_south', 'latitude', 'longitude') | frameBySeriesTypes('number')",
+            "seriesColors": [
+              "#7b56db",
+              "#cb2196",
+              "#008c80",
+              "#9d6300",
+              "#f6540b",
+              "#ff969e",
+              "#99b100",
+              "#f4b649",
+              "#ae8cff",
+              "#8cbcff",
+              "#813193",
+              "#0051b5",
+              "#009ceb",
+              "#00cdaf",
+              "#00490a",
+              "#dd9900",
+              "#465d00",
+              "#ff677b",
+              "#ff6ace",
+              "#00689d"
+            ]
+          }
+        ]
+      },
+      "dataSources": {
+        "primary": "ds_6loAQPDp"
+      },
+      "title": "Attacker by destination"
+    },
+    "viz_E2hK6fOZ": {
+      "type": "splunk.bar",
+      "options": {
+        "yAxisAbbreviation": "auto",
+        "y2AxisAbbreviation": "auto",
+        "showRoundedY2AxisLabels": false,
+        "legendTruncation": "ellipsisMiddle",
+        "showY2MajorGridLines": true,
+        "xAxisTitleText": "Destination IP",
+        "xAxisTitleVisibility": "show",
+        "yAxisTitleText": "Sessions",
+        "yAxisTitleVisibility": "show",
+        "y2AxisTitleVisibility": "show",
+        "yAxisScale": "linear",
+        "dataValuesDisplay": "all",
+        "stackMode": "auto",
+        "showSplitSeries": false,
+        "showIndependentYRanges": false,
+        "legendDisplay": "right"
+      },
+      "dataSources": {
+        "primary": "ds_l3MRIwqh"
+      },
+      "title": "Destinations"
+    },
+    "viz_SQwn9htR": {
+      "type": "splunk.table",
+      "dataSources": {
+        "primary": "ds_pXyBPylP"
+      },
+      "title": "Top SSH Client Versions",
+      "options": {
+        "count": 50
+      }
+    },
+    "viz_swGfyNpB": {
+      "type": "splunk.singlevalue",
+      "dataSources": {
+        "primary": "ds_fdkkx09i"
+      },
+      "title": "Unique src IPs"
+    },
+    "viz_ksgnEXY6": {
+      "type": "splunk.bar",
+      "options": {
+        "y": "> primary | frameBySeriesNames('Unique IPs Used')",
+        "x": "> primary | seriesByName('hassh')",
+        "dataValuesDisplay": "all",
+        "xAxisTitleText": "Unique HASSH",
+        "legendTruncation": "ellipsisOff",
+        "overlayFields": [],
+        "legendDisplay": "off"
+      },
+      "dataSources": {
+        "primary": "ds_nXfqfWNk"
+      },
+      "containerOptions": {},
+      "showProgressBar": true,
+      "showLastUpdated": false,
+      "title": "Unique IPs tied to each HASSH"
+    },
+    "viz_zGXS4UZb": {
+      "type": "splunk.bar",
+      "options": {
+        "x": "> primary | seriesByName('version')",
+        "y": "> primary | frameBySeriesNames('version','baseline','hostname','banner')",
+        "y2": "> primary | frameBySeriesNames('count')",
+        "splitByLayout": "trellis",
+        "trellisSplitBy": "version",
+        "legendDisplay": "off"
+      },
+      "dataSources": {
+        "primary": "ds_ni110Qyk"
+      },
+      "title": "SSH types that connect to each Cowrie Configuration"
+    },
+    "viz_tAeoOl85": {
+      "type": "splunk.table",
+      "dataSources": {
+        "primary": "ds_9Kpox1GR"
+      },
+      "title": "SSH banner per sensor",
+      "description": "NULL means the connection was dropped before a banner exchange happened"
+    },
+    "viz_ELq72dPn": {
+      "type": "splunk.sankey",
+      "options": {},
+      "dataSources": {
+        "primary": "ds_UToaPpiI"
+      }
+    },
+    "viz_yfc5lsy0": {
+      "type": "splunk.table",
+      "dataSources": {
+        "primary": "ds_nlajiWUB"
+      },
+      "title": "Number of commands before drop off per session"
+    },
+    "viz_QWf4mR9c": {
+      "type": "splunk.table",
+      "dataSources": {
+        "primary": "ds_tmN4dWwE"
+      },
+      "title": "Number of commands before drop off per unique hassh"
+    },
+    "viz_L5s3K8LM": {
+      "type": "splunk.table",
+      "options": {},
+      "dataSources": {
+        "primary": "ds_mwBa0vhm"
+      },
+      "context": {},
+      "containerOptions": {},
+      "showProgressBar": true,
+      "showLastUpdated": false
+    },
+    "viz_SJ1DWGlV": {
+      "type": "splunk.table",
+      "dataSources": {
+        "primary": "ds_TUEW1Qyz"
+      },
+      "title": "Authentications using deployed SSH-keys",
+      "options": {
+        "columnFormat": {
+          "deploy_ips": {
+            "width": 85
+          },
+          "deploy_count": {
+            "width": 60
+          },
+          "deploy_ip_count": {
+            "width": 60
+          },
+          "first_five_deploy_ips": {
+            "width": 60
+          },
+          "deploys_per_ip": {
+            "width": 60
+          },
+          "auth_count": {
+            "width": 60
+          },
+          "auth_ips": {
+            "width": 60
+          },
+          "auths_per_ip": {
+            "width": 60
+          },
+          "fingerprint": {
+            "width": 60
+          }
+        }
+      }
+    },
+    "viz_YyoiEHaL": {
+      "type": "splunk.table",
+      "dataSources": {
+        "primary": "ds_TuE74ssp"
+      },
+      "title": "SSH key deployment"
+    },
+    "viz_h51C6LD0": {
+      "type": "splunk.table",
+      "dataSources": {
+        "primary": "ds_g8KKdByh"
+      },
+      "title": "Authentications using SSH keys"
+    },
+    "viz_DwsBiPy6": {
+      "type": "splunk.column",
+      "options": {
+        "yAxisScale": "log",
+        "yAxisAbbreviation": "off",
+        "dataValuesDisplay": "all",
+        "y": "> primary | frameBySeriesNames('total_sessions','banner_sessions')",
+        "y2": "> primary | frameBySeriesNames('banner_pct')",
+        "y2AxisTitleText": "Banner disconnect percent",
+        "y2AxisLabelVisibility": "show",
+        "showY2AxisWithZero": true
+      },
+      "dataSources": {
+        "primary": "ds_eHKxkJGW"
+      },
+      "title": "Total sessions and disconnects after banner"
+    },
+    "viz_vhGRwkMU": {
+      "type": "splunk.column",
+      "options": {
+        "yAxisScale": "log",
+        "yAxisAbbreviation": "off",
+        "dataValuesDisplay": "all",
+        "y": "> primary | frameBySeriesNames('total_sessions','kex_sessions')",
+        "y2": "> primary | frameBySeriesNames('kex_pct')",
+        "y2AxisTitleText": "KEX disconnect percent",
+        "y2AxisLabelVisibility": "show",
+        "showY2AxisWithZero": true,
+        "x": "> primary | seriesByName('sensor')"
+      },
+      "dataSources": {
+        "primary": "ds_pOWllc2t"
+      },
+      "title": "Total sessions and disconnects after key exchange"
+    },
+    "viz_FyHAZQW6": {
+      "type": "splunk.table",
+      "options": {},
+      "dataSources": {
+        "primary": "ds_8VTJFBNq"
+      }
+    },
+    "viz_AVsG2i6L": {
+      "type": "splunk.table",
+      "options": {},
+      "dataSources": {
+        "primary": "ds_87uM98I1"
+      }
+    }
+  },
+  "applicationProperties": {
+    "collapseNavigation": false
+  },
+  "inputs": {
+    "input_global_trp": {
+      "type": "input.timerange",
+      "options": {
+        "token": "global_time",
+        "defaultValue": "-24h@h,now"
+      },
+      "title": "Global Time Range"
+    }
+  },
+  "layout": {
+    "options": {},
+    "globalInputs": [
+      "input_global_trp"
+    ],
+    "tabs": {
+      "items": [
+        {
+          "layoutId": "layout_1",
+          "label": "General"
+        },
+        {
+          "layoutId": "layout_GqbUF8k6",
+          "label": "Sensor stats"
+        },
+        {
+          "layoutId": "layout_vXcHfqQB",
+          "label": "SSH key deployment"
+        },
+        {
+          "layoutId": "layout_0pxNzxf6",
+          "label": "Combined iteration"
+        },
+        {
+          "layoutId": "layout_oyMtHA5v",
+          "label": "Uname"
+        }
+      ]
+    },
+    "layoutDefinitions": {
+      "layout_1": {
+        "type": "grid",
+        "structure": [
+          {
+            "item": "viz_fyJq4xL9",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 0,
+              "w": 720,
+              "h": 600
+            }
+          },
+          {
+            "item": "viz_E2hK6fOZ",
+            "type": "block",
+            "position": {
+              "x": 720,
+              "y": 0,
+              "w": 720,
+              "h": 600
+            }
+          },
+          {
+            "item": "viz_swGfyNpB",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 600,
+              "w": 1440,
+              "h": 91
+            }
+          },
+          {
+            "item": "viz_ksgnEXY6",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 691,
+              "w": 1440,
+              "h": 721
+            }
+          },
+          {
+            "item": "viz_AqPIIwOP",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 1412,
+              "w": 1440,
+              "h": 462
+            }
+          },
+          {
+            "item": "viz_bSlRfkQJ",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 1874,
+              "w": 720,
+              "h": 342
+            }
+          },
+          {
+            "item": "viz_mE8V6cT8",
+            "type": "block",
+            "position": {
+              "x": 720,
+              "y": 1874,
+              "w": 720,
+              "h": 342
+            }
+          },
+          {
+            "item": "viz_n8FRLQim",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 2216,
+              "w": 1440,
+              "h": 481
+            }
+          },
+          {
+            "item": "viz_lRaHkiLe",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 2697,
+              "w": 1440,
+              "h": 355
+            }
+          },
+          {
+            "item": "viz_t73mlvMV",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 3052,
+              "w": 1440,
+              "h": 300
+            }
+          },
+          {
+            "item": "viz_LpaZKOiP",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 3352,
+              "w": 1440,
+              "h": 369
+            }
+          },
+          {
+            "item": "viz_iTTcFZ7N",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 3721,
+              "w": 1440,
+              "h": 300
+            }
+          },
+          {
+            "item": "viz_SQwn9htR",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 4021,
+              "w": 1440,
+              "h": 400
+            }
+          },
+          {
+            "item": "viz_aD41nCHH",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 4421,
+              "w": 1440,
+              "h": 300
+            }
+          }
+        ],
+        "options": {
+          "width": 1440,
+          "height": 960
+        }
+      },
+      "layout_GqbUF8k6": {
+        "type": "grid",
+        "structure": [
+          {
+            "item": "viz_zGXS4UZb",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 0,
+              "w": 1440,
+              "h": 625
+            }
+          },
+          {
+            "item": "viz_tAeoOl85",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 625,
+              "w": 1440,
+              "h": 287
+            }
+          },
+          {
+            "item": "viz_ELq72dPn",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 912,
+              "w": 1440,
+              "h": 541
+            }
+          },
+          {
+            "item": "viz_yfc5lsy0",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 1453,
+              "w": 1440,
+              "h": 443
+            }
+          },
+          {
+            "item": "viz_QWf4mR9c",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 1896,
+              "w": 1440,
+              "h": 503
+            }
+          },
+          {
+            "item": "viz_L5s3K8LM",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 2399,
+              "w": 1440,
+              "h": 632
+            }
+          },
+          {
+            "item": "viz_DwsBiPy6",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 3031,
+              "w": 1440,
+              "h": 372
+            }
+          },
+          {
+            "item": "viz_vhGRwkMU",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 3403,
+              "w": 1440,
+              "h": 365
+            }
+          }
+        ],
+        "options": {
+          "width": 1440
+        }
+      },
+      "layout_vXcHfqQB": {
+        "type": "grid",
+        "structure": [
+          {
+            "item": "viz_SJ1DWGlV",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 0,
+              "w": 1440,
+              "h": 773
+            }
+          },
+          {
+            "item": "viz_YyoiEHaL",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 773,
+              "w": 1440,
+              "h": 400
+            }
+          },
+          {
+            "item": "viz_h51C6LD0",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 1173,
+              "w": 1440,
+              "h": 400
+            }
+          }
+        ],
+        "options": {
+          "width": 1440
+        }
+      },
+      "layout_0pxNzxf6": {
+        "type": "grid",
+        "structure": [
+          {
+            "item": "viz_FyHAZQW6",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 0,
+              "w": 1440,
+              "h": 178
+            }
+          },
+          {
+            "item": "viz_AVsG2i6L",
+            "type": "block",
+            "position": {
+              "x": 0,
+              "y": 178,
+              "w": 1440,
+              "h": 400
+            }
+          }
+        ],
+        "options": {
+          "width": 1440
+        }
+      },
+      "layout_oyMtHA5v": {
+        "type": "grid",
+        "structure": [],
+        "options": {
+          "width": 1440
+        }
+      }
+    }
+  },
+  "title": "Cowrie Honeypot",
+  "description": "",
+  "defaults": {
+    "dataSources": {
+      "ds.search": {
+        "options": {
+          "queryParameters": {
+            "latest": "$global_time.latest$",
+            "earliest": "$global_time.earliest$"
+          }
+        }
+      },
+      "ds.spl2": {
+        "options": {
+          "queryParameters": {
+            "latest": "$global_time.latest$",
+            "earliest": "$global_time.earliest$"
+          }
+        }
+      }
+    },
+    "visualizations": {
+      "global": {
+        "showProgressBar": true
+      }
+    }
+  }
+}
