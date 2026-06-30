@@ -1,0 +1,9 @@
+services:
+  cowrie-raspberrypi4-profile:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cowrie-raspberrypi4-profile
+    ports:
+      - "2222:2222"
+    restart: unless-stopped

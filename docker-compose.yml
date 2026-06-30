@@ -1,0 +1,202 @@
+services:
+  cowrie-test:
+    image: cowrie/cowrie:3.0
+    container_name: cowrie-test
+    network_mode: host
+    expose:
+      - 22
+      - 9000
+    restart: unless-stopped
+    environment:
+      COWRIE_HONEYPOT_SENSOR_NAME: test
+      COWRIE_SSH_LISTEN_ENDPOINTS: "tcp:22:interface=10.20.0.36\ntcp:22:interface=172.101.0.1"
+  cowrie-baseline:
+    image: cowrie/cowrie:3.0
+    container_name: cowrie-baseline
+    network_mode: host
+    expose:
+      - 22
+      - 9000
+    restart: unless-stopped
+    environment:
+      COWRIE_OUTPUT_JSONLOG_ENABLED: true
+      COWRIE_OUTPUT_SPLUNK_ENABLED: true
+      COWRIE_OUTPUT_SPLUNK_URL: https://localhost:8088/services/collector/event
+      COWRIE_OUTPUT_SPLUNK_TOKEN: 050f6d46-f02e-4844-9426-32c250ad76db
+      COWRIE_OUTPUT_SPLUNK_SOURCE: baseline
+      COWRIE_HONEYPOT_SENSOR_NAME: baseline
+      COWRIE_SSH_LISTEN_ENDPOINTS: "tcp:22:interface=172.101.0.2"
+    volumes:
+      - ./config/baseline/cowrie.cfg:/etc/cowrie/cowrie.cfg:ro
+      - ./outputs/baseline/log:/cowrie/cowrie-git/var/log/cowrie
+      - ./outputs/baseline/state:/cowrie/cowrie-git/var/lib/cowrie
+  cowrie-hostname3:
+   image: cowrie/cowrie:3.0
+   container_name: cowrie-hostname3
+   network_mode: host
+   expose:
+     - 22
+     - 9000
+   restart: unless-stopped
+   environment:
+     COWRIE_OUTPUT_JSONLOG_ENABLED: true
+     COWRIE_OUTPUT_SPLUNK_ENABLED: true
+     COWRIE_OUTPUT_SPLUNK_URL: https://localhost:8088/services/collector/event
+     COWRIE_OUTPUT_SPLUNK_TOKEN: 050f6d46-f02e-4844-9426-32c250ad76db
+     COWRIE_OUTPUT_SPLUNK_SOURCE: hostname3
+     COWRIE_HONEYPOT_SENSOR_NAME: hostname3
+     COWRIE_HONEYPOT_CONTENTS_PATH: /cowrie/cowrie-git/honeyfs
+     COWRIE_SSH_LISTEN_ENDPOINTS: "tcp:22:interface=172.101.0.3"
+   volumes:
+     - ./config/hostname3/honeyfs:/cowrie/cowrie-git/honeyfs:ro
+     - ./config/hostname3/cowrie.cfg:/etc/cowrie/cowrie.cfg:ro
+     - ./outputs/hostname3/log:/cowrie/cowrie-git/var/log/cowrie
+     - ./outputs/hostname3/state:/cowrie/cowrie-git/var/lib/cowrie
+  cowrie-banner3:
+   image: cowrie/cowrie:3.0
+   container_name: cowrie-banner3
+   network_mode: host
+   expose:
+     - 22
+     - 9000
+   restart: unless-stopped
+   environment:
+     COWRIE_OUTPUT_JSONLOG_ENABLED: true
+     COWRIE_OUTPUT_SPLUNK_ENABLED: true
+     COWRIE_OUTPUT_SPLUNK_URL: https://localhost:8088/services/collector/event
+     COWRIE_OUTPUT_SPLUNK_TOKEN: 050f6d46-f02e-4844-9426-32c250ad76db
+     COWRIE_OUTPUT_SPLUNK_SOURCE: banner3
+     COWRIE_HONEYPOT_SENSOR_NAME: banner3
+     COWRIE_SSH_LISTEN_ENDPOINTS: "tcp:22:interface=172.101.0.4"
+   volumes:
+     - ./config/banner3/cowrie.cfg:/etc/cowrie/cowrie.cfg:ro
+     - ./outputs/banner3/log:/cowrie/cowrie-git/var/log/cowrie
+     - ./outputs/banner3/state:/cowrie/cowrie-git/var/lib/cowrie
+  cowrie-uname2:
+   image: cowrie/cowrie:3.0
+   container_name: cowrie-uname2
+   network_mode: host
+   expose:
+     - 22
+     - 9000
+   restart: unless-stopped
+   environment:
+     COWRIE_OUTPUT_JSONLOG_ENABLED: true
+     COWRIE_OUTPUT_SPLUNK_ENABLED: true
+     COWRIE_OUTPUT_SPLUNK_URL: https://localhost:8088/services/collector/event
+     COWRIE_OUTPUT_SPLUNK_TOKEN: 050f6d46-f02e-4844-9426-32c250ad76db
+     COWRIE_OUTPUT_SPLUNK_SOURCE: uname2
+     COWRIE_HONEYPOT_SENSOR_NAME: uname2
+     COWRIE_SSH_LISTEN_ENDPOINTS: "tcp:22:interface=172.101.0.5"
+   volumes:
+     - ./config/uname2/cowrie.cfg:/etc/cowrie/cowrie.cfg:ro
+     - ./outputs/uname2/log:/cowrie/cowrie-git/var/log/cowrie
+     - ./outputs/uname2/state:/cowrie/cowrie-git/var/lib/cowrie
+  cowrie-phil:
+    image: cowrie/cowrie:3.0
+    container_name: cowrie-phil
+    network_mode: host
+    expose:
+      - 22
+      - 9000
+    restart: unless-stopped
+    environment:
+      COWRIE_OUTPUT_JSONLOG_ENABLED: true
+      COWRIE_OUTPUT_SPLUNK_ENABLED: true
+      COWRIE_OUTPUT_SPLUNK_URL: https://localhost:8088/services/collector/event
+      COWRIE_OUTPUT_SPLUNK_TOKEN: 050f6d46-f02e-4844-9426-32c250ad76db
+      COWRIE_OUTPUT_SPLUNK_SOURCE: phil
+      COWRIE_HONEYPOT_SENSOR_NAME: phil
+      COWRIE_HONEYPOT_CONTENTS_PATH: /cowrie/cowrie-git/honeyfs
+      COWRIE_SSH_LISTEN_ENDPOINTS: "tcp:22:interface=172.101.0.6"
+    volumes:
+      - ./config/phil/honeyfs:/cowrie/cowrie-git/honeyfs:ro
+      - ./config/phil/cowrie.cfg:/etc/cowrie/cowrie.cfg:ro
+      - ./outputs/phil/log:/cowrie/cowrie-git/var/log/cowrie
+      - ./outputs/phil/state:/cowrie/cowrie-git/var/lib/cowrie
+  cowrie-hosts2:
+    image: cowrie/cowrie:3.0
+    container_name: cowrie-hosts2
+    network_mode: host
+    expose:
+      - 22
+      - 9000
+    restart: unless-stopped
+    environment:
+      COWRIE_OUTPUT_JSONLOG_ENABLED: true
+      COWRIE_OUTPUT_SPLUNK_ENABLED: true
+      COWRIE_OUTPUT_SPLUNK_URL: https://localhost:8088/services/collector/event
+      COWRIE_OUTPUT_SPLUNK_TOKEN: 050f6d46-f02e-4844-9426-32c250ad76db
+      COWRIE_OUTPUT_SPLUNK_SOURCE: hosts2
+      COWRIE_HONEYPOT_SENSOR_NAME: hosts2
+      COWRIE_HONEYPOT_CONTENTS_PATH: /cowrie/cowrie-git/honeyfs
+      COWRIE_SSH_LISTEN_ENDPOINTS: "tcp:22:interface=172.101.0.7"
+    volumes:
+      - ./config/hosts2/honeyfs:/cowrie/cowrie-git/honeyfs:ro
+      - ./config/hosts2/cowrie.cfg:/etc/cowrie/cowrie.cfg:ro
+      - ./outputs/hosts2/log:/cowrie/cowrie-git/var/log/cowrie
+      - ./outputs/hosts2/state:/cowrie/cowrie-git/var/lib/cowrie
+  cowrie-combined:
+    image: cowrie/cowrie:3.0
+    container_name: cowrie-combined
+    network_mode: host
+    expose:
+      - 22
+      - 9000
+    restart: unless-stopped
+    environment:
+      COWRIE_OUTPUT_JSONLOG_ENABLED: true
+      COWRIE_OUTPUT_SPLUNK_ENABLED: true
+      COWRIE_OUTPUT_SPLUNK_URL: https://localhost:8088/services/collector/event
+      COWRIE_OUTPUT_SPLUNK_TOKEN: 050f6d46-f02e-4844-9426-32c250ad76db
+      COWRIE_OUTPUT_SPLUNK_SOURCE: combined
+      COWRIE_HONEYPOT_SENSOR_NAME: combined
+      COWRIE_HONEYPOT_CONTENTS_PATH: /cowrie/cowrie-git/honeyfs
+      COWRIE_SSH_LISTEN_ENDPOINTS: "tcp:22:interface=172.101.0.8"
+    volumes:
+      - ./config/combined/honeyfs:/cowrie/cowrie-git/honeyfs:ro
+      - ./config/combined/cowrie.cfg:/etc/cowrie/cowrie.cfg:ro
+      - ./outputs/combined/log:/cowrie/cowrie-git/var/log/cowrie
+      - ./outputs/combined/state:/cowrie/cowrie-git/var/lib/cowrie
+  cowrie-raspberrypi4-deploy2:
+    build:
+      context: ./config/raspberrypi4
+      dockerfile: Dockerfile
+    container_name: cowrie-raspberrypi4-deploy2
+    network_mode: host
+    expose:
+      - 22
+      - 9000
+    restart: unless-stopped
+    environment:
+      COWRIE_OUTPUT_JSONLOG_ENABLED: true
+      COWRIE_OUTPUT_SPLUNK_ENABLED: true
+      COWRIE_OUTPUT_SPLUNK_URL: https://localhost:8088/services/collector/event
+      COWRIE_OUTPUT_SPLUNK_TOKEN: 050f6d46-f02e-4844-9426-32c250ad76db
+      COWRIE_OUTPUT_SPLUNK_SOURCE: raspberrypi4_deploy2
+      COWRIE_HONEYPOT_SENSOR_NAME: raspberrypi4_deploy2
+      COWRIE_HONEYPOT_CONTENTS_PATH: /cowrie/cowrie-git/honeyfs
+      COWRIE_SSH_LISTEN_ENDPOINTS: "tcp:22:interface=172.101.0.9"
+    volumes:
+      # For this configration, configs are already in the Docker image
+      - ./outputs/raspberrypi4_deploy2/log:/cowrie/cowrie-git/var/log/cowrie
+      - ./outputs/raspberrypi4_deploy2/state:/cowrie/cowrie-git/var/lib/cowrie
+  splunk:
+    image: splunk/splunk:10.4-rhel9
+    container_name: splunk
+    network_mode: host
+    expose:
+      - 8000
+      - 8088
+    restart: unless-stopped
+    volumes:
+      - splunk_var:/opt/splunk/var
+      - splunk_etc:/opt/splunk/etc
+    environment:
+      SPLUNK_START_ARGS: "--accept-license"
+      SPLUNK_GENERAL_TERMS: "--accept-sgt-current-at-splunk-com"
+      SPLUNK_PASSWORD: "sshhoneypot"
+
+volumes:
+  splunk_var: {}
+  splunk_etc: {}
